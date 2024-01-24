@@ -25,6 +25,7 @@ var (
 func init() {
 	rootCmd.PersistentFlags().StringVarP(&executeParam.FileToWrite, "file", "f", "", "file to write the output to")
 	rootCmd.Flags().IntVar(&executeParam.Depth, "depth", 1, "depth of the crawling")
+	rootCmd.Flags().StringVar(&executeParam.Regex, "regex", "", "regex filter links")
 }
 
 func Execute() (data.ExecuteParam, error) {

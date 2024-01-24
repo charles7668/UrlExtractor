@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gocolly/colly/v2"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -28,6 +29,11 @@ func main() {
 		fmt.Println("Write output to file : " + executeParam.FileToWrite)
 	}
 	fmt.Println("Depth of crawling : ", executeParam.Depth)
+	var regex *regexp.Regexp
+	if len(executeParam.Regex) > 0 {
+		fmt.Println("Regex filter : ", executeParam.Regex)
+		regex = regexp.MustCompile(executeParam.Regex)
+	}
 
 	var record = make(map[string]bool)
 	var queue container.Queue
@@ -47,6 +53,13 @@ func main() {
 				// if link is relative, resolve it
 				if !strings.HasPrefix(link, "http") {
 					link = srcUrl.String() + link
+				}
+
+				// if link is not match for regex pattern, return
+				if len(executeParam.Regex) > 0 {
+					if !regex.MatchString(link) {
+						return
+					}
 				}
 				if record[link] {
 					return
