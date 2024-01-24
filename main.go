@@ -1,12 +1,23 @@
 package main
 
 import (
+	"UrlExtractor/cmd"
 	"fmt"
 	"github.com/gocolly/colly/v2"
+	"os"
 	"strings"
 )
 
 func main() {
+	// parse command line arguments
+	executeParam, err := cmd.Execute()
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	fmt.Println("The URL to be crawled is : " + executeParam.Url)
+
 	// create new collector from colly
 	collector := colly.NewCollector()
 
@@ -22,11 +33,7 @@ func main() {
 		fmt.Println(link)
 	})
 
-	collector.OnRequest(func(request *colly.Request) {
-		fmt.Println("Visiting", request.URL.String())
-	})
-
-	err := collector.Visit("https://www.google.com")
+	err = collector.Visit(executeParam.Url)
 	if err != nil {
 		fmt.Println(err)
 		return
