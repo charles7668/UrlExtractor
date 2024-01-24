@@ -14,11 +14,17 @@ var rootCmd = &cobra.Command{
 		if len(args) < 1 {
 			return
 		}
-		executeParam = data.ExecuteParam{Url: strings.Trim(args[0], "")}
+		executeParam.Url = strings.TrimSpace(args[0])
 	},
 }
 
-var executeParam data.ExecuteParam
+var (
+	executeParam data.ExecuteParam
+)
+
+func init() {
+	rootCmd.PersistentFlags().StringVarP(&executeParam.FileToWrite, "file", "f", "", "file to write the output to")
+}
 
 func Execute() (data.ExecuteParam, error) {
 	if err := rootCmd.Execute(); err != nil {
