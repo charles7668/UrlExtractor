@@ -20,7 +20,26 @@ func main() {
 		os.Exit(1)
 	}
 
+	var queue container.Queue
 	fmt.Println("The URL to be crawled is : " + executeParam.Url)
+	if len(executeParam.InputFile) > 0 {
+		fmt.Println("Read input from file : " + executeParam.InputFile)
+		if !fileutil.CheckFileExist(executeParam.InputFile) {
+			fmt.Println("File does not exist")
+			os.Exit(1)
+		}
+		lines, err := fileutil.ReadFile(executeParam.InputFile)
+		if err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		for _, line := range lines {
+			queue.Enqueue(line)
+		}
+	} else {
+		queue.Enqueue(executeParam.Url)
+	}
+
 	if len(executeParam.FileToWrite) > 0 {
 		if !fileutil.CheckPathValid(executeParam.FileToWrite) {
 			fmt.Println("File path is invalid")
@@ -36,8 +55,6 @@ func main() {
 	}
 
 	var record = make(map[string]bool)
-	var queue container.Queue
-	queue.Enqueue(executeParam.Url)
 	// create new collector from colly
 	collector := colly.NewCollector()
 
