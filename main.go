@@ -2,11 +2,13 @@ package main
 
 import (
 	"UrlExtractor/cmd"
+	"UrlExtractor/container"
 	"UrlExtractor/fileutil"
 	"fmt"
 	"github.com/gocolly/colly/v2"
 	"os"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -25,29 +27,45 @@ func main() {
 		}
 		fmt.Println("Write output to file : " + executeParam.FileToWrite)
 	}
+	fmt.Println("Depth of crawling : ", executeParam.Depth)
 
-	var links []string
+	var record = make(map[string]bool)
+	var queue container.Queue
+	queue.Enqueue(executeParam.Url)
 	// create new collector from colly
 	collector := colly.NewCollector()
 
-	// find all link in the page
-	collector.OnHTML("a[href]", func(element *colly.HTMLElement) {
-		link := element.Attr("href")
-		srcUrl := element.Request.URL
+	for i := 0; i < executeParam.Depth; i++ {
+		queueSize := queue.Size()
+		for j := 0; j < queueSize; j++ {
+			visitUrl := queue.Dequeue().(string)
+			// find all link in the page
+			collector.OnHTML("a[href]", func(element *colly.HTMLElement) {
+				link := element.Attr("href")
+				srcUrl := element.Request.URL
 
-		// if link is relative, resolve it
-		if !strings.HasPrefix(link, "http") {
-			link = srcUrl.String() + link
+				// if link is relative, resolve it
+				if !strings.HasPrefix(link, "http") {
+					link = srcUrl.String() + link
+				}
+				if record[link] {
+					return
+				}
+				record[link] = true
+				queue.Enqueue(link)
+				fmt.Println(link)
+			})
+
+			// visit the url
+			err = collector.Visit(visitUrl)
+			if err != nil {
+				fmt.Println("url : ", visitUrl, "error : ", err)
+				continue
+			}
+
+			// wait for 50ms to avoid being blocked
+			time.Sleep(50)
 		}
-		links = append(links, link)
-		fmt.Println(link)
-	})
-
-	// visit the url
-	err = collector.Visit(executeParam.Url)
-	if err != nil {
-		fmt.Println(err)
-		return
 	}
 
 	// write all links to file
@@ -63,7 +81,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		} else {
-			for _, link := range links {
+			for link := range record {
 				_, err := fmt.Fprintln(file, link)
 				if err != nil {
 					break
