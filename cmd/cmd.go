@@ -23,7 +23,7 @@ var (
 )
 
 func init() {
-	rootCmd.PersistentFlags().StringVarP(&executeParam.FileToWrite, "file", "f", "", "file to write the output to")
+	rootCmd.PersistentFlags().StringVarP(&executeParam.FileToWrite, "output", "o", "", "file to write the output to")
 	rootCmd.PersistentFlags().StringVarP(&executeParam.InputFile, "input", "i", "", "input file to read the urls from")
 	rootCmd.Flags().IntVar(&executeParam.Depth, "depth", 1, "depth of the crawling")
 	rootCmd.Flags().StringVar(&executeParam.Regex, "regex", "", "regex filter links")
