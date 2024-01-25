@@ -6,19 +6,6 @@ import (
 	"os"
 )
 
-// CheckPathValid checks if the file path is valid
-func CheckPathValid(path string) bool {
-	// Check if the file path is valid
-	_, err := os.Stat(path)
-	if err != nil {
-		if os.IsNotExist(err) {
-			return true
-		}
-		return false
-	}
-	return true
-}
-
 // CheckFileExist checks if the file exist
 func CheckFileExist(path string) bool {
 	// Check if the file path is valid
@@ -29,8 +16,8 @@ func CheckFileExist(path string) bool {
 	return true
 }
 
-// closeWithHandleError close file with error handling
-func closeWithHandleError(file *os.File) {
+// CloseWithHandleError close file with error handling
+func CloseWithHandleError(file *os.File) {
 	err := file.Close()
 	if err != nil {
 		fmt.Println("Error closing file : ", err)
@@ -43,7 +30,7 @@ func ReadFile(path string) ([]string, error) {
 	if err != nil {
 		return []string{}, err
 	}
-	defer closeWithHandleError(file)
+	defer CloseWithHandleError(file)
 
 	var lines []string
 	var line string

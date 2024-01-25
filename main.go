@@ -41,10 +41,13 @@ func main() {
 	}
 
 	if len(executeParam.FileToWrite) > 0 {
-		if !fileutil.CheckPathValid(executeParam.FileToWrite) {
-			fmt.Println("File path is invalid")
+		// try to create file to check if it is valid
+		file, err := os.Create(executeParam.FileToWrite)
+		if err != nil {
+			fmt.Println(err)
 			os.Exit(1)
 		}
+		fileutil.CloseWithHandleError(file)
 		fmt.Println("Write output to file : " + executeParam.FileToWrite)
 	}
 	fmt.Println("Depth of crawling : ", executeParam.Depth)

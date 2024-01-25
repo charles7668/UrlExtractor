@@ -15,7 +15,7 @@ func TestCheckFileExist(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	defer closeWithHandleError(file)
+	defer CloseWithHandleError(file)
 
 	// check
 	if !CheckFileExist(tempDir + "/" + existFile) {
@@ -31,7 +31,7 @@ func TestCheckFileExist(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	defer closeWithHandleError(fileNonExist)
+	defer CloseWithHandleError(fileNonExist)
 
 	// check nonExistFile is exist
 	if !CheckFileExist(tempDir + "/" + nonExistFile) {
