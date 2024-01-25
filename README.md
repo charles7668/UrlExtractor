@@ -28,3 +28,9 @@ support flags can be found by using --help or -h flag
 ```
 UrlExtractor.exe <flags> <url>
 ```
+
+# Test
+
+```
+go test -v ./...
+```
