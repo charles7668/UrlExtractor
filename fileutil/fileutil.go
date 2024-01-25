@@ -38,6 +38,9 @@ func ReadFile(path string) ([]string, error) {
 	for {
 		_, err := fmt.Fscanf(file, "%s\n", &line)
 		if err != nil {
+			if err.Error() == "unexpected newline" {
+				continue
+			}
 			if err == io.EOF {
 				break
 			}
